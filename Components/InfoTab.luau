@@ -65,10 +65,4 @@ return function(Window)
 		
         Executor:AddLabel(Result, true)
     end
-
-    local Community = InfoTab:AddLeftGroupbox("Community")
-    Community:AddButton("Copy Discord Invite", function()
-	    toclipboard("https://dsc.gg/abysallhub")
-	    Library:Notify("Discord invite copied.")
-    end)
 end
