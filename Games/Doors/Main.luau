@@ -2999,10 +2999,12 @@ Functions.HandleCharacter = function(NewCharacter)
 		end
 	end
 
+	local LastEntityRefresh = 0
+	local LastThirdPersonState
+	local AmbientTweenTarget
+	local AmbientTween
 	Connections.MainHandler = Services.RunService.RenderStepped:Connect(function()
-		if Services.Workspace:FindFirstChild("Camera") then
-			Camera = Services.Workspace:FindFirstChild("Camera")
-		end
+		Camera = Services.Workspace.CurrentCamera or Camera
 
 		if Toggles.SpeedBoostToggle.Value then
 			Humanoid.WalkSpeed = Functions.GetCurrentSpeed() + Options.SpeedBoostSlider.Value
@@ -3012,11 +3014,24 @@ Functions.HandleCharacter = function(NewCharacter)
 			CollisionPartClone.Massless = true
 		end
 
-		Globals.IsEyes    = Services.Workspace:FindFirstChild("Eyes") ~= nil or Services.Workspace:FindFirstChild("Lookman") ~= nil
-		Globals.IsLookman = Services.Workspace:FindFirstChild("BackdoorLookman") ~= nil
+		if tick() - LastEntityRefresh >= 0.1 then
+			Globals.IsEyes = Services.Workspace:FindFirstChild("Eyes") ~= nil or Services.Workspace:FindFirstChild("Lookman") ~= nil
+			Globals.IsLookman = Services.Workspace:FindFirstChild("BackdoorLookman") ~= nil
+			LastEntityRefresh = tick()
+		end
 
 		if Toggles.AmbientToggle.Value then
-			Services.TweenService:Create(Services.Lighting, TweenInfo.new(0.2, Enum.EasingStyle.Exponential), { Ambient = Options.AmbientColor.Value }):Play()
+			local TargetColor = Options.AmbientColor.Value
+			if AmbientTweenTarget ~= TargetColor then
+				if AmbientTween then
+					AmbientTween:Cancel()
+				end
+				AmbientTween = Services.TweenService:Create(Services.Lighting, TweenInfo.new(0.2, Enum.EasingStyle.Exponential), { Ambient = TargetColor })
+				AmbientTween:Play()
+				AmbientTweenTarget = TargetColor
+			end
+		else
+			AmbientTweenTarget = nil
 		end
 
 		if Main_Game then
@@ -3053,7 +3068,10 @@ Functions.HandleCharacter = function(NewCharacter)
 		end
 
 		if LocalPlayer:GetAttribute("Alive") == true then
-			Services.SoundService:WaitForChild("Main").Volume = 1
+			local MainSound = Services.SoundService:FindFirstChild("Main")
+			if MainSound then
+				MainSound.Volume = 1
+			end
 		end
 
 		if Floor == "OldHotel" or Floor == "Fools" then
@@ -3147,23 +3165,31 @@ Functions.HandleCharacter = function(NewCharacter)
 			Character:SetAttribute("Crouching", Functions.IsCrouching())
 		end
 
-		RayParams.FilterDescendantsInstances = { Character }
-		local TPOffset = CFrame.new(Options.ThirdPersonOffsetX.Value, Options.ThirdPersonOffsetY.Value, Options.ThirdPersonOffsetZ.Value)
-		local Direction = (Camera.CFrame * TPOffset).Position - Camera.CFrame.Position
-		local WallResult = Services.Workspace:Spherecast(Camera.CFrame.Position, 0.2, Direction, RayParams)
-
 		if Toggles.ThirdPersonToggle.Value then
-			if Toggles.ThirdPersonWallCheck.Value and WallResult and WallResult.Instance.CanCollide then
-				local NewPos = Camera.CFrame.Position + Direction.Unit * WallResult.Distance
-				Camera.CFrame = CFrame.new(NewPos, NewPos + Camera.CFrame.LookVector)
+			local TPOffset = CFrame.new(Options.ThirdPersonOffsetX.Value, Options.ThirdPersonOffsetY.Value, Options.ThirdPersonOffsetZ.Value)
+			if Toggles.ThirdPersonWallCheck.Value then
+				RayParams.FilterDescendantsInstances = { Character }
+				local Direction = (Camera.CFrame * TPOffset).Position - Camera.CFrame.Position
+				local WallResult = Services.Workspace:Spherecast(Camera.CFrame.Position, 0.2, Direction, RayParams)
+				if WallResult and WallResult.Instance.CanCollide then
+					local NewPos = Camera.CFrame.Position + Direction.Unit * WallResult.Distance
+					Camera.CFrame = CFrame.new(NewPos, NewPos + Camera.CFrame.LookVector)
+				else
+					Camera.CFrame = Camera.CFrame * TPOffset
+				end
 			else
 				Camera.CFrame = Camera.CFrame * TPOffset
 			end
 		end
 
-		for _, Part in Globals.ThirdPersonParts do
-			Part.Transparency = Toggles.ThirdPersonToggle.Value and 0 or 1
-			Part.LocalTransparencyModifier = Toggles.ThirdPersonToggle.Value and 0 or 1
+		local ThirdPersonEnabled = Toggles.ThirdPersonToggle.Value
+		if LastThirdPersonState ~= ThirdPersonEnabled then
+			local Transparency = ThirdPersonEnabled and 0 or 1
+			for _, Part in Globals.ThirdPersonParts do
+				Part.Transparency = Transparency
+				Part.LocalTransparencyModifier = Transparency
+			end
+			LastThirdPersonState = ThirdPersonEnabled
 		end
 
 		if Globals.SpectateEntity and Toggles.AutoClosetToggle.Value and Toggles.SpectateEntityToggle.Value then
@@ -3180,7 +3206,6 @@ Functions.HandleCharacter = function(NewCharacter)
 		end
 
 		if Main_Game then
-			task.wait()
 			Main_Game.fovtarget = Options.FieldOfView.Value
 		else
 			Camera.FieldOfView = Options.FieldOfView.Value
@@ -3195,21 +3220,23 @@ Functions.HandleCharacter = function(NewCharacter)
 			RemotesFolder.CamLock:FireServer()
 		end
 
-		local ClosestPlayer = { Distance = math.huge, Object = nil }
-		for _, Player in Services.Players:GetPlayers() do
-			if Player.Character and Player ~= LocalPlayer then
-				local Root = Player.Character:FindFirstChild("HumanoidRootPart")
-				if Root then
-					local D = (Camera.CFrame.Position - Root.Position).Magnitude
-					if D < ClosestPlayer.Distance then
-						ClosestPlayer.Distance = D
-						ClosestPlayer.Object = Player
+		if LocalPlayer:GetAttribute("Alive") ~= true then
+			local ClosestPlayer = { Distance = math.huge, Object = nil }
+			for _, Player in Services.Players:GetPlayers() do
+				if Player.Character and Player ~= LocalPlayer then
+					local Root = Player.Character:FindFirstChild("HumanoidRootPart")
+					if Root then
+						local D = (Camera.CFrame.Position - Root.Position).Magnitude
+						if D < ClosestPlayer.Distance then
+							ClosestPlayer.Distance = D
+							ClosestPlayer.Object = Player
+						end
 					end
 				end
 			end
-		end
-		if ClosestPlayer.Object and LocalPlayer:GetAttribute("Alive") ~= true then
-			LocalPlayer:SetAttribute("CurrentRoom", ClosestPlayer.Object:GetAttribute("CurrentRoom"))
+			if ClosestPlayer.Object then
+				LocalPlayer:SetAttribute("CurrentRoom", ClosestPlayer.Object:GetAttribute("CurrentRoom"))
+			end
 		end
 	end)
 
@@ -3257,12 +3284,14 @@ Functions.HandleHidingTransparency = function(Model)
 end
 
 Functions.HandleObject = function(Object)
-	for _, Room in CurrentRooms:GetChildren() do
-		if Object:IsDescendantOf(Room) then
-			Object:SetAttribute("ParentRoom", tonumber(Room.Name))
-			break
+	if Object.Parent ~= CurrentRooms then
+		local Room = Object.Parent
+		while Room and Room.Parent ~= CurrentRooms do
+			Room = Room.Parent
 		end
-		task.wait()
+		if Room and Room.Parent == CurrentRooms then
+			Object:SetAttribute("ParentRoom", tonumber(Room.Name))
+		end
 	end
 
 	if Object.Parent == CurrentRooms then
@@ -3980,6 +4009,8 @@ Connections.PromptAnimationFixer1 = Services.ProximityPromptService.PromptButton
 end)
 
 Globals.ObjectQueue = {}
+local ObjectQueueHead = 1
+local ObjectQueueTail = 0
 local AllowedInstances = {
 	Lava=true, GoldPile=true, KeyObtain=true, Drakobloxxer=true, FuseObtain=true,
 	MinesGenerator=true, JeffTheKiller=true, Snare=true, FakeDoor=true, DoorFake=true, SideroomSpace=true,
@@ -4004,23 +4035,63 @@ Functions.QueueObject = function(Object)
 	if not AllowedInstances[Object.Name] and Object.ClassName ~= "ProximityPrompt" and Object.Parent ~= CurrentRooms and not ItemNames[Object.Name] then
 		return
 	end
-	table.insert(Globals.ObjectQueue, Object)
+	ObjectQueueTail += 1
+	Globals.ObjectQueue[ObjectQueueTail] = Object
 end
 
 Globals.QueueDone = true
-Connections.QueueConnection = Services.RunService.RenderStepped:Connect(function()
-	local Object = table.remove(Globals.ObjectQueue, 1)
-	if Object then
-		Functions.HandleObject(Object)
+Connections.InstanceHandler = Services.Workspace.DescendantAdded:Connect(function(Object)
+	Functions.QueueObject(Object)
+end)
+
+task.spawn(function()
+	local ProcessedSinceYield = 0
+	while true do
+		if ObjectQueueHead <= ObjectQueueTail then
+			local Object = Globals.ObjectQueue[ObjectQueueHead]
+			Globals.ObjectQueue[ObjectQueueHead] = nil
+			ObjectQueueHead += 1
+
+			if Object then
+				local Success, ErrorMessage = pcall(Functions.HandleObject, Object)
+				if not Success then
+					warn("[Abysall] Failed to process queued object: " .. tostring(ErrorMessage))
+				end
+				ProcessedSinceYield += 1
+			end
+
+			if ProcessedSinceYield >= 25 then
+				ProcessedSinceYield = 0
+				task.wait()
+			end
+
+			if ObjectQueueHead > 256 and ObjectQueueHead > ObjectQueueTail / 2 then
+				local CompactedQueue = {}
+				local NewTail = ObjectQueueTail - ObjectQueueHead + 1
+				for Index = 1, NewTail do
+					CompactedQueue[Index] = Globals.ObjectQueue[ObjectQueueHead + Index - 1]
+				end
+				Globals.ObjectQueue = CompactedQueue
+				ObjectQueueHead = 1
+				ObjectQueueTail = NewTail
+			end
+		else
+			Globals.ObjectQueue = {}
+			ObjectQueueHead = 1
+			ObjectQueueTail = 0
+			ProcessedSinceYield = 0
+			task.wait(0.1)
+		end
 	end
 end)
 
-for _, Object in Services.Workspace:GetDescendants() do
-	task.spawn(function() Functions.QueueObject(Object) end)
-end
-
-Connections.InstanceHandler = Services.Workspace.DescendantAdded:Connect(function(Object)
-	Functions.QueueObject(Object)
+task.spawn(function()
+	for Index, Object in Services.Workspace:GetDescendants() do
+		Functions.QueueObject(Object)
+		if Index % 200 == 0 then
+			task.wait()
+		end
+	end
 end)
 
 for _, Player in Services.Players:GetPlayers() do
