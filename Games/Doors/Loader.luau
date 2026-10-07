@@ -1,5 +1,6 @@
+local BaseUrl = "https://raw.githubusercontent.com/flopish/Abysall/refs/heads/main/"
 if game.PlaceId ~= 6516141723 then
-    Abysall.LoadModule("Games/Doors/Main.luau")
+    loadstring(game:HttpGet(BaseUrl .. "Games/Doors/Main.luau"))()
 else
-    Abysall.LoadModule("Games/Doors/Lobby.luau")
+    loadstring(game:HttpGet(BaseUrl .. "Games/Doors/Lobby.luau"))()
 end
