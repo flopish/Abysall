@@ -32,6 +32,9 @@ local function LoadModule(Path)
         end
         error(Message, 0)
     end
+    if type(Source) == "string" and Source:sub(1, 3) == "\239\187\191" then
+        Source = Source:sub(4)
+    end
     Log(("Fetched %s (%d bytes)"):format(Path, #Source))
 
     if type(loadstring) ~= "function" then
