@@ -32,8 +32,15 @@ local function LoadModule(Path)
         end
         error(Message, 0)
     end
-    if type(Source) == "string" and Source:sub(1, 3) == "\239\187\191" then
-        Source = Source:sub(4)
+    while type(Source) == "string" and #Source >= 3 do
+        local b1, b2, b3 = string.byte(Source, 1, 3)
+        if b1 == 239 and b2 == 187 and b3 == 191 then
+            Source = string.sub(Source, 4)
+        elseif (b1 == 254 and b2 == 255) or (b1 == 255 and b2 == 254) then
+            Source = string.sub(Source, 3)
+        else
+            break
+        end
     end
     Log(("Fetched %s (%d bytes)"):format(Path, #Source))
 
