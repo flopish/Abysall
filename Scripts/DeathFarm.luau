@@ -2,7 +2,7 @@ while not game:IsLoaded() do
 	task.wait(1)
 end
 
-print("Abysall Hub death farm for DOORS")
+print("Abysall Hub death farm for DOORS, created by flopish")
 
 local Services = setmetatable({}, {
 	__index = function(self, Key)

@@ -429,8 +429,8 @@ Globals.DoorsNotify = function(NotifyOptions)
 	Achievement.Visible = true
 
 	Achievement.Frame.TextLabel.Text = NotifyOptions.Style or "NOTIFICATION"
-	Achievement.Frame.Details.Title.Text = NotifyOptions.Title or "Sem TÃ­tulo"
-	Achievement.Frame.Details.Desc.Text = NotifyOptions.Description or "Sem DescriÃ§Ã£o"
+	Achievement.Frame.Details.Title.Text = NotifyOptions.Title or "Sem Título"
+	Achievement.Frame.Details.Desc.Text = NotifyOptions.Description or "Sem Descrição"
 	Achievement.Frame.Details.Reason.Text = NotifyOptions.Reason or ""
 	Achievement.Frame.ImageLabel.Image = (NotifyOptions.Image ~= "" and NotifyOptions.Image) or "rbxassetid://6023426923"
 
@@ -1013,14 +1013,14 @@ end
 
 local Window = Library:CreateWindow({
 	Title = "Abysall Hub",
-	Footer = "",
+	Footer = "flopish",
 	NotifySide = "Right",
 	ShowCustomCursor = false,
 	AutoShow = true,
 	Center = true,
-	TabPadding = 3,
-	MenuFadeTime = 0,
-	CornerRadius = 2,
+	TabPadding = 6,
+	MenuFadeTime = 0.15,
+	CornerRadius = 6,
 })
 
 Abysall.Interface.ApplyInfoTab(Window)
@@ -1107,7 +1107,7 @@ Toggles.EnableCharacterSlide:OnChanged(function(Value)
 	end
 end)
 
-Groupboxes.General_Self = Tabs.General:AddLeftGroupbox("Self")
+Groupboxes.General_Self = Tabs.General:AddLeftGroupbox("Interactions")
 Groupboxes.General_Self:AddToggle("DoorReachToggle", {
 	Text = "Door Reach", Default = false, Tooltip = "Allows you to open doors from further away."
 })
@@ -1226,7 +1226,7 @@ Groupboxes.Self_Automation:AddDropdown("SpecateEntityMode", {
 	AllowNull = true
 })
 
-Groupboxes.Self_Misc = Tabs.General:AddRightGroupbox("Miscellaneous")
+Groupboxes.Self_Misc = Tabs.General:AddRightGroupbox("Session")
 Groupboxes.Self_Misc:AddButton({
 	Text = "Play Again", Tooltip = "Makes you join a new run, click again to cancel.", DoubleClick = true,
 	Func = function() RemotesFolder.PlayAgain:FireServer() end
@@ -1259,7 +1259,7 @@ Groupboxes.Self_Misc:AddButton({
 	end
 })
 
-Groupboxes.Exploits_Bypass = Tabs.Exploits:AddLeftGroupbox("Bypass")
+Groupboxes.Exploits_Bypass = Tabs.Exploits:AddLeftGroupbox("Entity Bypasses")
 Groupboxes.Exploits_Bypass:AddToggle("BypassGiggle",         { Text = "Bypass Giggle",           Default = false, Tooltip = "Prevents 'Giggle' from attacking you." })
 Groupboxes.Exploits_Bypass:AddToggle("BypassDupe",           { Text = "Bypass Dupe",             Default = false, Tooltip = "Prevents you from open 'Dupe' fake doors." })
 Groupboxes.Exploits_Bypass:AddToggle("BypassEyes",           { Text = "Bypass Eyes",             Default = false, Tooltip = "Prevents 'Eyes' from hurting you." })
@@ -1382,7 +1382,7 @@ Toggles.BypassJeff:OnChanged(function(Value)
 	end
 end)
 
-Groupboxes.Exploits_BypassRight = Tabs.Exploits:AddRightGroupbox("Bypass")
+Groupboxes.Exploits_BypassRight = Tabs.Exploits:AddRightGroupbox("Room Bypasses")
 Groupboxes.Exploits_BypassRight:AddToggle("DisableAnticheat", {
 	Text = "Anticheat Bypass", Default = false,
 	Tooltip = "Completely disables the anticheat, after interacting with a ladder."
@@ -1450,7 +1450,7 @@ Toggles.CrouchSpoof:OnChanged(function(Value)
 	end
 end)
 
-Groupboxes.Exploits_Remove = Tabs.Exploits:AddRightGroupbox("Remove")
+Groupboxes.Exploits_Remove = Tabs.Exploits:AddRightGroupbox("Feature Removal")
 Groupboxes.Exploits_Remove:AddToggle("RemoveScreech", { Text = "Remove Screech",  Default = false, Tooltip = "Prevents 'Screech' from spawning." })
 Groupboxes.Exploits_Remove:AddToggle("RemoveHalt",    { Text = "Remove Halt",     Default = false, Tooltip = "Prevents 'Halt' from spawning." })
 Groupboxes.Exploits_Remove:AddToggle("RemoveA90",     { Text = "Remove A-90",     Default = false, Tooltip = "Prevents 'A-90' from spawning." })
@@ -1530,7 +1530,7 @@ Toggles.RemoveSurge:OnChanged(function(Value)
 	end
 end)
 
-Groupboxes.Exploits_Audio = Tabs.Exploits:AddLeftGroupbox("Audio")
+Groupboxes.Exploits_Audio = Tabs.Exploits:AddLeftGroupbox("Audio Controls")
 Globals.JamMuffle = Services.SoundService:WaitForChild("Main"):FindFirstChild("Jamming") or Instance.new("EqualizerSoundEffect")
 
 Groupboxes.Exploits_Audio:AddToggle("RemoveFootstepSounds",    { Text = "Remove Footstep Sounds",    Default = false, Tooltip = "Removes the sounds when walking." })
@@ -1552,7 +1552,7 @@ Toggles.RemoveInteractingSounds:OnChanged(function(Value)
 	Globals.MainUI.Initiator.Main_Game.Reminder.Caption.Volume = Value and 0 or 0.1
 end)
 
-Groupboxes.Visuals_LeftTab = Tabs.Visuals:AddLeftTabbox("Camera / Effects")
+Groupboxes.Visuals_LeftTab = Tabs.Visuals:AddLeftTabbox("Camera & Effects")
 Groupboxes.Visuals_Camera = Groupboxes.Visuals_LeftTab:AddTab("Camera")
 Groupboxes.Visuals_Camera:AddToggle("AmbientToggle", { Text = "Ambient", Default = false, Tooltip = "Changes the lighting color to the specified value." })
 Groupboxes.Visuals_Camera:AddSlider("FieldOfView", { Text = "Field of View", Min = 1, Max = 120, Default = 70, Rounding = 0 })
@@ -1584,11 +1584,27 @@ Groupboxes.Visuals_Camera:AddSlider("ViewmodelOffsetY", { Text = "Y Offset", Min
 Groupboxes.Visuals_Camera:AddSlider("ViewmodelOffsetZ", { Text = "Z Offset", Min = -10, Max = 10, Default = 0, Rounding = 1, Compact = true, Disabled = not Functions.CheckCompatability({"require"}), DisabledTooltip = Globals.IncompatibleMessage })
 
 Toggles.AmbientToggle:AddColorPicker("AmbientColor", { Text = "Ambient", Default = Color3.fromRGB(255, 255, 255), Transparency = 0 })
-Toggles.AmbientToggle:OnChanged(function(Value)
-	local OldAmbient = CurrentRooms:FindFirstChild(tostring(LocalPlayer:GetAttribute("CurrentRoom"))):GetAttribute("Ambient")
-	Services.TweenService:Create(Services.Lighting, TweenInfo.new(0.2, Enum.EasingStyle.Exponential), {
-		Ambient = Value and Options.AmbientColor.Value or OldAmbient
-	}):Play()
+local function ApplyAmbient(Enabled)
+	local CurrentRoom = CurrentRooms:FindFirstChild(tostring(LocalPlayer:GetAttribute("CurrentRoom")))
+	local RoomAmbient = CurrentRoom and CurrentRoom:GetAttribute("Ambient")
+	local TargetAmbient = Enabled and Options.AmbientColor.Value or RoomAmbient
+	if TargetAmbient then
+		Services.TweenService:Create(Services.Lighting, TweenInfo.new(0.2, Enum.EasingStyle.Exponential), {
+			Ambient = TargetAmbient
+		}):Play()
+	end
+end
+
+Toggles.AmbientToggle:OnChanged(ApplyAmbient)
+Options.AmbientColor:OnChanged(function()
+	if Toggles.AmbientToggle.Value then
+		ApplyAmbient(true)
+	end
+end)
+Connections.AmbientRoomChanged = LocalPlayer:GetAttributeChangedSignal("CurrentRoom"):Connect(function()
+	if Toggles.AmbientToggle.Value then
+		ApplyAmbient(true)
+	end
 end)
 
 local Main_Game
@@ -1696,7 +1712,7 @@ Toggles.DisableEntityJumpscares:OnChanged(function(Value)
 	end
 end)
 
-Groupboxes.Visuals_RightTab     = Tabs.Visuals:AddRightTabbox("Entities / Settings")
+Groupboxes.Visuals_RightTab     = Tabs.Visuals:AddRightTabbox("Alerts & Notifications")
 Groupboxes.Visuals_Entities     = Groupboxes.Visuals_RightTab:AddTab("Entities")
 Groupboxes.Visuals_EntitySettings = Groupboxes.Visuals_RightTab:AddTab("Settings")
 
@@ -1750,7 +1766,7 @@ Groupboxes.Visuals_EntitySettings:AddButton({ Text = "Test Notification", Double
 	Functions.Notify({Title = "This is a test."})
 end})
 
-Groupboxes.Visuals_ESP          = Tabs.Visuals:AddRightTabbox("ESP/Settings")
+Groupboxes.Visuals_ESP          = Tabs.Visuals:AddRightTabbox("ESP & Colors")
 Groupboxes.Visuals_ESP_Toggles  = Groupboxes.Visuals_ESP:AddTab("ESP")
 Groupboxes.Visuals_ESP_Settings = Groupboxes.Visuals_ESP:AddTab("Settings")
 
@@ -2070,8 +2086,8 @@ Options.ESPArrowsRadius:OnChanged(function(V)    Abysall.ESPLibrary:SetArrowRadi
 
 Tabs.Floors:UpdateWarningBox({
 	Visible = true,
-	Title = "Compatability Warning",
-	Text = "Features highlighted in red do not work in the current floor.",
+	Title = "Compatibility notice",
+	Text = "Features highlighted in red aren't available on this floor.",
 })
 
 Groupboxes.Floors_Automation = Tabs.Floors:AddRightGroupbox("Automation")
@@ -2225,13 +2241,19 @@ Connections.RoomsAutoWalkHandler = Services.RunService.Heartbeat:Connect(functio
 
 		local Finished = false
 		local Start = tick()
+		local LastTargetCheck = 0
 
+		Humanoid:MoveTo(Waypoint.Position)
 		local StepConnection = Services.RunService.RenderStepped:Connect(function()
 			if Stuck or not Toggles.RoomsAutoWalk.Value then Finished = true return end
 
-			local NewTarget = Functions.RoomsAutoWalk.GetPathfindTarget()
-			if NewTarget and NewTarget:FindFirstChild("HidePrompt") and not TargetPart:FindFirstChild("HidePrompt") then
-				Finished = true return
+			if tick() - LastTargetCheck >= 0.25 then
+				LastTargetCheck = tick()
+				local NewTarget = Functions.RoomsAutoWalk.GetPathfindTarget()
+				if NewTarget and NewTarget:FindFirstChild("HidePrompt") and not TargetPart:FindFirstChild("HidePrompt") then
+					Finished = true
+					return
+				end
 			end
 			if TargetPart:FindFirstChild("HidePrompt") then
 				local HidePrompt = TargetPart:FindFirstChild("HidePrompt")
@@ -2243,7 +2265,6 @@ Connections.RoomsAutoWalkHandler = Services.RunService.Heartbeat:Connect(functio
 			end
 			local FlatPos = Vector3.new(Waypoint.Position.X, RootPart.Position.Y, Waypoint.Position.Z)
 			if LocalPlayer:DistanceFromCharacter(FlatPos) < 5 then Finished = true end
-			Humanoid:MoveTo(Waypoint.Position)
 		end)
 
 		while not Finished do
@@ -2441,7 +2462,7 @@ Toggles.ShowEyestalkPathToggle:AddColorPicker("ShowEyestalkPathColor", { Text = 
 Toggles.ShowEyestalkPathToggle:OnChanged(function(V) UpdateBeamVisibility(Objects.EyestalkHighlights, "ShowEyestalkPathColor", V) end)
 Options.ShowEyestalkPathColor:OnChanged(function(V)  UpdateBeamColor(Objects.EyestalkHighlights, V) end)
 
-Groupboxes.Floors_Bypass = Tabs.Floors:AddLeftGroupbox("Bypass")
+Groupboxes.Floors_Bypass = Tabs.Floors:AddLeftGroupbox("Floor Bypasses")
 Groupboxes.Floors_Bypass:AddToggle("RemoveSeekTrigger", {
 	Text = "Delete Seek Trigger", Default = false, Tooltip = "Diables the 'Seek' chase trigger.",
 	Risky = not (Floor == "Fools" or Floor == "OldHotel"),
@@ -2999,11 +3020,10 @@ Functions.HandleCharacter = function(NewCharacter)
 		end
 	end
 
-	local LastEntityRefresh = 0
-	local AmbientTweenTarget
-	local AmbientTween
 	Connections.MainHandler = Services.RunService.RenderStepped:Connect(function()
-		Camera = Services.Workspace.CurrentCamera or Camera
+		if Services.Workspace:FindFirstChild("Camera") then
+			Camera = Services.Workspace:FindFirstChild("Camera")
+		end
 
 		if Toggles.SpeedBoostToggle.Value then
 			Humanoid.WalkSpeed = Functions.GetCurrentSpeed() + Options.SpeedBoostSlider.Value
@@ -3013,23 +3033,8 @@ Functions.HandleCharacter = function(NewCharacter)
 			CollisionPartClone.Massless = true
 		end
 
-		if tick() - LastEntityRefresh >= 0.1 then
-			Globals.IsEyes    = Services.Workspace:FindFirstChild("Eyes") ~= nil or Services.Workspace:FindFirstChild("Lookman") ~= nil
-			Globals.IsLookman = Services.Workspace:FindFirstChild("BackdoorLookman") ~= nil
-			LastEntityRefresh = tick()
-		end
-
-		if Toggles.AmbientToggle.Value then
-			local TargetColor = Options.AmbientColor.Value
-			if AmbientTweenTarget ~= TargetColor then
-				if AmbientTween then AmbientTween:Cancel() end
-				AmbientTween = Services.TweenService:Create(Services.Lighting, TweenInfo.new(0.2, Enum.EasingStyle.Exponential), { Ambient = TargetColor })
-				AmbientTween:Play()
-				AmbientTweenTarget = TargetColor
-			end
-		else
-			AmbientTweenTarget = nil
-		end
+		Globals.IsEyes    = Services.Workspace:FindFirstChild("Eyes") ~= nil or Services.Workspace:FindFirstChild("Lookman") ~= nil
+		Globals.IsLookman = Services.Workspace:FindFirstChild("BackdoorLookman") ~= nil
 
 		if Main_Game then
 			if Toggles.RemoveCameraShake.Value     then Main_Game.csgo = CFrame.new() end
@@ -3065,8 +3070,7 @@ Functions.HandleCharacter = function(NewCharacter)
 		end
 
 		if LocalPlayer:GetAttribute("Alive") == true then
-			local MainSound = Services.SoundService:FindFirstChild("Main")
-			if MainSound then MainSound.Volume = 1 end
+			Services.SoundService:WaitForChild("Main").Volume = 1
 		end
 
 		if Floor == "OldHotel" or Floor == "Fools" then
@@ -3270,12 +3274,13 @@ Functions.HandleHidingTransparency = function(Model)
 end
 
 Functions.HandleObject = function(Object)
-	for _, Room in CurrentRooms:GetChildren() do
-		if Object:IsDescendantOf(Room) then
-			Object:SetAttribute("ParentRoom", tonumber(Room.Name))
+	local Parent = Object.Parent
+	while Parent and Parent ~= CurrentRooms do
+		if Parent.Parent == CurrentRooms then
+			Object:SetAttribute("ParentRoom", tonumber(Parent.Name))
 			break
 		end
-		task.wait()
+		Parent = Parent.Parent
 	end
 
 	if Object.Parent == CurrentRooms then
@@ -4013,49 +4018,23 @@ local AllowedInstances = {
 	Padlock=true, EyestalkEndCutscene=true, MinecartRig=true, SeekMovingNewClone=true
 }
 
-local ObjectQueueHead = 1
-local ObjectQueueTail = 0
-
 Functions.QueueObject = function(Object)
 	if not AllowedInstances[Object.Name] and Object.ClassName ~= "ProximityPrompt" and Object.Parent ~= CurrentRooms and not ItemNames[Object.Name] then
 		return
 	end
-	ObjectQueueTail += 1
-	Globals.ObjectQueue[ObjectQueueTail] = Object
+	table.insert(Globals.ObjectQueue, Object)
 end
 
 Globals.QueueDone = true
-task.spawn(function()
-	while true do
-		task.wait()
-		local Processed = 0
-		while ObjectQueueHead <= ObjectQueueTail and Processed < 25 do
-			local Object = Globals.ObjectQueue[ObjectQueueHead]
-			Globals.ObjectQueue[ObjectQueueHead] = nil
-			ObjectQueueHead += 1
-			if Object then
-				local Ok, Err = pcall(Functions.HandleObject, Object)
-				if not Ok then
-					warn("[Abysall] HandleObject error: " .. tostring(Err))
-				end
-			end
-			Processed += 1
-		end
-		if ObjectQueueHead > 256 and ObjectQueueHead > ObjectQueueTail / 2 then
-			local Compacted = {}
-			local NewTail = ObjectQueueTail - ObjectQueueHead + 1
-			for i = 1, NewTail do
-				Compacted[i] = Globals.ObjectQueue[ObjectQueueHead + i - 1]
-			end
-			Globals.ObjectQueue = Compacted
-			ObjectQueueHead = 1
-			ObjectQueueTail = NewTail
-		end
+Connections.QueueConnection = Services.RunService.RenderStepped:Connect(function()
+	local Object = table.remove(Globals.ObjectQueue, 1)
+	if Object then
+		Functions.HandleObject(Object)
 	end
 end)
 
 for _, Object in Services.Workspace:GetDescendants() do
-	task.spawn(function() Functions.QueueObject(Object) end)
+	Functions.QueueObject(Object)
 end
 
 Connections.InstanceHandler = Services.Workspace.DescendantAdded:Connect(function(Object)
@@ -4575,8 +4554,7 @@ Library:OnUnload(function()
 	Globals.RoomsNodesFolder:Destroy()
 	Globals.ManipulateBody:Destroy()
 
-	local OldAmbient = CurrentRooms:FindFirstChild(tostring(LocalPlayer:GetAttribute("CurrentRoom"))):GetAttribute("Ambient")
-	Services.TweenService:Create(Services.Lighting, TweenInfo.new(0.2, Enum.EasingStyle.Exponential), { Ambient = OldAmbient }):Play()
+	ApplyAmbient(false)
 
 	for _, Prompt in Objects.Prompts do
 		if FakePrompts[Prompt] then
@@ -4634,4 +4612,3 @@ end)
 while not Globals.MainUI do task.wait() end
 Abysall.Interface.ApplySettingsTab(Window)
 Functions.Notify({ Title = "Successfully loaded in " .. math.floor((tick() - LoadStart) * 1000) / 1000 .. " seconds." , Body = "Press '" .. tostring(Options.MenuKeybind.Value) .. "' to toggle the UI."})
-

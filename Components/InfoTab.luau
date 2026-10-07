@@ -32,7 +32,7 @@ return function(Window)
     local LocalPlayer = Services.Players.LocalPlayer
     local InfoTab = Window:AddTab("Info", "user")
 
-    local User = InfoTab:AddLeftGroupbox("User Info")
+    local User = InfoTab:AddLeftGroupbox("Profile")
 
     local ImageSize = Enum.ThumbnailSize.Size420x420
     local ImageType = Enum.ThumbnailType.HeadShot
@@ -45,6 +45,7 @@ return function(Window)
 
     User:AddLabel("ID: " .. LocalPlayer.Name, true)
     User:AddLabel("Total Executions: " .. (Abysall.TotalExecutions and Abysall.TotalExecutions or "N/A"), true)
+    User:AddLabel("Author: flopish", true)
 
     local Changelog = InfoTab:AddRightGroupbox("Changelog")
     for Index, Change in pairs(LatestChangelog) do
@@ -52,7 +53,7 @@ return function(Window)
     end
 
     local Name, Version = Abysall.Environment.identifyexecutor()
-    local Executor = InfoTab:AddRightGroupbox("Executor Info")
+    local Executor = InfoTab:AddRightGroupbox("Diagnostics")
     Executor:AddLabel("Name: " .. Name, true)
 	Executor:AddLabel("Version: " .. (Version and Version or "N/A"), true)
     Executor:AddDivider()
@@ -65,4 +66,5 @@ return function(Window)
 		
         Executor:AddLabel(Result, true)
     end
+
 end

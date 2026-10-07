@@ -37,14 +37,14 @@ task.wait(1)
 
 local Window = Library:CreateWindow({
     Title = "Abysall Hub",
-    Footer = "Foot text hello",
+    Footer = "flopish",
     NotifySide = "Right",
     ShowCustomCursor = false,
     AutoShow = true,
     Center = true,
-	TabPadding = 3,
-	MenuFadeTime = 0,
-    CornerRadius = 2,
+	TabPadding = 6,
+	MenuFadeTime = 0.15,
+    CornerRadius = 6,
 })
 
 Abysall.Interface.ApplyInfoTab(Window)
@@ -255,7 +255,7 @@ Globals.CodesList = {
 }
 Globals.UnlockedBadges = {}
 
-Groupboxes.General_Self = Tabs.General:AddLeftGroupbox("Self")
+Groupboxes.General_Self = Tabs.General:AddLeftGroupbox("Elevator Controls")
 
 Groupboxes.General_Self:AddToggle("AutoJoinElevator", {
     Text = "Auto Join Elevator",
@@ -270,7 +270,7 @@ Groupboxes.General_Self:AddDropdown("AutoJoinElevatorTarget", {
     Searchable = true
 })
 
-Groupboxes.General_Automation = Tabs.General:AddLeftGroupbox("Automation")
+Groupboxes.General_Automation = Tabs.General:AddLeftGroupbox("Lobby Tools")
 
 Groupboxes.General_Automation:AddToggle("CycleAchievements", {
     Text = "Cycle Achievements",
@@ -347,7 +347,7 @@ Connections.MainConnection = Services.RunService.Heartbeat:Connect(function()
 	end
 end)
 
-Groupboxes.General_QuickPlay = Tabs.General:AddRightGroupbox("Quick Play")
+Groupboxes.General_QuickPlay = Tabs.General:AddRightGroupbox("Quick Destinations")
 
 Groupboxes.General_QuickPlay:AddButton({
 	Text = "The Hotel",

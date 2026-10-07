@@ -21,7 +21,8 @@ return function(Window)
 	local Options = Library.Options
 	
 	local SettingsTab = Window:AddTab("Settings", "settings")
-	local MenuGroup = SettingsTab:AddLeftGroupbox("Menu")
+	local MenuGroup = SettingsTab:AddLeftGroupbox("Interface")
+	local ActionsGroup = SettingsTab:AddRightGroupbox("Actions")
 	
 	MenuGroup:AddToggle("KeybindMenuOpen", {
 		Default = Library.KeybindFrame.Visible,
@@ -84,10 +85,8 @@ return function(Window)
 			Library:SetDPIScale(DPI)
 		end,
 	})
-	MenuGroup:AddDivider()
-	MenuGroup:AddLabel("Menu bind"):AddKeyPicker("MenuKeybind", { Default = "RightShift", NoUI = true, Text = "Menu keybind" })
-	
-	MenuGroup:AddButton("Unload", function()
+	ActionsGroup:AddLabel("Menu bind"):AddKeyPicker("MenuKeybind", { Default = "RightShift", NoUI = true, Text = "Menu keybind" })
+	ActionsGroup:AddButton("Unload", function()
 		Library:Unload()
 	end)
 	
