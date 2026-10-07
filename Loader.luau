@@ -1,6 +1,11 @@
 if Abysall then
     return 
 end
+
+local Hint = Instance.new("Hint", workspace)
+Hint.Text = "[Abysall] Loading environment..."
+
+local Success, Result = pcall(function()
 getgenv().Abysall = {
     Legit = true
 }
@@ -16,6 +21,7 @@ getgenv().Abysall = {
 
     Legit = true, -- pog
 }
+Hint.Text = "[Abysall] Preparing user settings..."
 
 local function CloneReference(Object)
     if Abysall and Abysall.Environment.cloneref then
@@ -58,12 +64,22 @@ if Abysall.Environment.writefile and Abysall.Environment.readfile then
     Abysall.Environment.writefile("Abysall/UserData.json", Services.HttpService:JSONEncode(Decoded))
 end
 
+Hint.Text = "[Abysall] Loading interface..."
 Abysall.Interface = loadstring(game:HttpGet(BaseUrl .. "Components/Interface.luau"))()
+Hint.Text = "[Abysall] Loading analytics..."
 Abysall.Analytics = loadstring(game:HttpGet(BaseUrl .. "Components/Analytics.luau"))()
 
 local CurrentGame = GameList[game.GameId]
 if CurrentGame then
+    Hint.Text = "[Abysall] Loading " .. CurrentGame .. "..."
     loadstring(game:HttpGet(BaseUrl .. "Games/" .. CurrentGame .. "/Loader.luau"))()
 else
+    Hint.Text = "[Abysall] Loading universal features..."
     loadstring(game:HttpGet(BaseUrl .. "Games/Universal/Loader.luau"))()
+end
+end)
+
+Hint:Destroy()
+if not Success then
+    error(Result, 0)
 end
