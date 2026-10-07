@@ -71,19 +71,8 @@ local function LoadModule(Path)
     return Result
 end
 
-local ExistingAbysall = GlobalEnvironment.Abysall
-if type(ExistingAbysall) == "table" then
-    if ExistingAbysall.Loaded then
-        Log("Already loaded; skipping duplicate execution")
-        return
-    elseif ExistingAbysall.Loading then
-        Log("A load is already in progress; skipping duplicate execution")
-        return
-    else
-        Log("Retrying after an incomplete previous load")
-    end
-elseif ExistingAbysall ~= nil then
-    Log("Replacing incompatible previous Abysall state")
+if type(GlobalEnvironment.Abysall) == "table" then
+    Log("Resetting previous Abysall instance for clean reload")
 end
 
 local Abysall = {
